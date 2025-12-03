@@ -1,14 +1,14 @@
 <template>
   <v-card class="mt-6">
     <v-card-text>
-      <p>Всего задач: {{ total }}</p>
-      <p>Активных: {{ active }}</p>
-      <p>Завершенных: {{ completed }}</p>
+      <p>Всего задач: {{ tasks.length }}</p>
+      <p>Активных: {{ activeCount }}</p>
+      <p>Завершенных: {{ completedCount }}</p>
       <p>
         Процент завершения:
         {{
-          total
-            ? ((completed / total) * 100).toFixed(1)
+          tasks.length
+            ? ((completedCount / tasks.length) * 100).toFixed(1)
             : '0.0'
         }}%
       </p>
@@ -17,14 +17,10 @@
 </template>
 
 <script setup lang="ts">
-defineProps<{
-  total: number
-  active: number
-  completed: number
-}>()
+import { useTasks } from '@/composables/useTasks'
+
+const { tasks, activeCount, completedCount } = useTasks()
 </script>
 
 <style scoped>
 </style>
-
-

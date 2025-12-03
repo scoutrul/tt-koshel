@@ -1,8 +1,7 @@
 <template>
-  <v-form @submit.prevent="$emit('add-task')" class="mb-6">
+  <v-form @submit.prevent="addTask" class="mb-6">
     <v-text-field
-      :model-value="newTaskTitle"
-      @update:model-value="$emit('update:newTaskTitle', $event)"
+      v-model="newTaskTitle"
       label="Новая задача"
       :rules="[value => !!value || 'Введите текст задачи']"
       variant="outlined"
@@ -15,17 +14,10 @@
 </template>
 
 <script setup lang="ts">
-defineProps<{
-  newTaskTitle: string
-}>()
+import { useTasks } from '@/composables/useTasks'
 
-defineEmits<{
-  (e: 'update:newTaskTitle', value: string): void
-  (e: 'add-task'): void
-}>()
+const { newTaskTitle, addTask } = useTasks()
 </script>
 
 <style scoped>
 </style>
-
-

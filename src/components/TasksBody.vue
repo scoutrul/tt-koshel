@@ -4,19 +4,9 @@
       <v-col cols="12">
         <h1 class="text-h4 mb-4">Мои задачи</h1>
 
-        <TaskFilters
-          :current-filter="currentFilter"
-          :total="tasks.length"
-          :active-count="activeCount"
-          :completed-count="completedCount"
-          @change-filter="changeFilter"
-        />
+        <TaskFilters />
 
-        <AddTaskForm
-          :new-task-title="newTaskTitle"
-          @update:newTaskTitle="newTaskTitle = $event"
-          @add-task="addTask"
-        />
+        <AddTaskForm />
 
         <TaskList
           :tasks="filteredTasks"
@@ -28,11 +18,7 @@
           @cancel-deletion="cancelDeletion"
         />
 
-        <TaskStats
-          :total="tasks.length"
-          :active="activeCount"
-          :completed="completedCount"
-        />
+        <TaskStats />
       </v-col>
     </v-row>
   </v-container>
@@ -45,7 +31,6 @@ import TaskStats from './TaskStats.vue'
 import TaskFilters from './TaskFilters.vue'
 import AddTaskForm from './AddTaskForm.vue'
 import { useTasks } from '@/composables/useTasks'
-import type { TaskFilter } from '@/types'
 import {
   startDeletionTimer,
   cancelDeletionTimer,
@@ -55,11 +40,7 @@ import {
 
 const {
   tasks,
-  newTaskTitle,
-  currentFilter,
   filteredTasks,
-  activeCount,
-  completedCount,
   formatDate,
   loadTasks,
   addTask,
@@ -68,10 +49,6 @@ const {
 
 const pendingDeletions = ref<Set<number>>(new Set())
 const deletionTimers = ref<Record<number, DeletionTimer>>({})
-
-const changeFilter = (filter: TaskFilter) => {
-  currentFilter.value = filter
-}
 
 const startDeletion = (id: number) => {
   startDeletionTimer(id, tasks, pendingDeletions, deletionTimers)

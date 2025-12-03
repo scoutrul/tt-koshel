@@ -1,15 +1,15 @@
 <template>
   <div class="filter-section mb-4">
     <v-btn
-      @click="$emit('change-filter', 'all')"
+      @click="setFilter('all')"
       :class="{ 'bg-primary': currentFilter === 'all' }"
       variant="tonal"
       class="mr-2"
     >
-      Все ({{ total }})
+      Все ({{ tasks.length }})
     </v-btn>
     <v-btn
-      @click="$emit('change-filter', 'active')"
+      @click="setFilter('active')"
       :class="{ 'bg-primary': currentFilter === 'active' }"
       variant="tonal"
       class="mr-2"
@@ -17,7 +17,7 @@
       Активные ({{ activeCount }})
     </v-btn>
     <v-btn
-      @click="$emit('change-filter', 'completed')"
+      @click="setFilter('completed')"
       :class="{ 'bg-primary': currentFilter === 'completed' }"
       variant="tonal"
       class="mr-2"
@@ -28,18 +28,14 @@
 </template>
 
 <script setup lang="ts">
+import { useTasks } from '@/composables/useTasks'
 import type { TaskFilter } from '@/types'
 
-defineProps<{
-  currentFilter: TaskFilter
-  total: number
-  activeCount: number
-  completedCount: number
-}>()
+const { tasks, currentFilter, activeCount, completedCount } = useTasks()
 
-defineEmits<{
-  (e: 'change-filter', filter: TaskFilter): void
-}>()
+const setFilter = (filter: TaskFilter) => {
+  currentFilter.value = filter
+}
 </script>
 
 <style scoped>
