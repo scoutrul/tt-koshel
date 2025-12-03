@@ -1,136 +1,33 @@
 <template>
   <v-app>
-    <v-app-bar color="white" density="compact">
-      <v-img
-        class="logo ml-12 mr-4"
-        src="https://storage.yandexcloud.net/forlogo/logo.svg"
-        alt="Логотип"
-        cover
-      />
-      <v-app-bar-title>Управление задачами</v-app-bar-title>
-    </v-app-bar>
+    <AppHeader />
 
     <v-main>
-      <v-container fluid>
-        <v-row>
-          <v-col cols="12" md="8">
-            <v-container>
-              <v-row>
-                <v-col cols="12">
-                  <h1 class="text-h4 mb-4">Мои задачи</h1>
-                  
-                  <div class="filter-section mb-4">
-                    <v-btn 
-                      @click="currentFilter = 'all'"
-                      :class="{ 'bg-primary': currentFilter === 'all' }"
-                      variant="tonal"
-                      class="mr-2"
-                    >
-                      Все ({{ tasks.length }})
-                    </v-btn>
-                    <v-btn 
-                      @click="currentFilter = 'active'"
-                      :class="{ 'bg-primary': currentFilter === 'active' }"
-                      variant="tonal"
-                      class="mr-2"
-                    >
-                      Активные ({{ tasks.filter(t => !t.completed).length }})
-                    </v-btn>
-                    <v-btn 
-                      @click="currentFilter = 'completed'"
-                      :class="{ 'bg-primary': currentFilter === 'completed' }"
-                      variant="tonal"
-                      class="mr-2"
-                    >
-                      Завершенные ({{ tasks.filter(t => t.completed).length }})
-                    </v-btn>
-                  </div>
-
-                  <v-form @submit.prevent="addTask" class="mb-6">
-                    <v-text-field
-                      v-model="newTaskTitle"
-                      label="Новая задача"
-                      :rules="[value => !!value || 'Введите текст задачи']"
-                      variant="outlined"
-                      density="comfortable"
-                    />
-                    <v-btn type="submit" color="primary" class="mt-2">Добавить</v-btn>
-                  </v-form>
-
-                  <v-list lines="two" class="elevation-1 rounded">
-                    <v-list-item v-for="task in filteredTasks" :key="task.id">
-                      <template v-slot:prepend>
-                        <v-checkbox
-                          :model-value="task.completed"
-                          @update:model-value="toggleTask(task.id)"
-                          density="comfortable"
-                        />
-                      </template>
-                      
-                      <v-list-item-title 
-                        :class="{ 'text-decoration-line-through text-grey': task.completed }"
-                        class="font-weight-medium"
-                      >
-                        {{ task.title }}
-                      </v-list-item-title>
-                      <v-list-item-subtitle>
-                        Создано: {{ formatDate(task.createdAt) }}
-                        | Обновлено: {{ formatDate(task.updatedAt) }}
-                        <span v-if="task.completed">
-                          | Завершено: {{ formatDate(task.completedAt) }}
-                        </span>
-                      </v-list-item-subtitle>
-                      
-                      <template v-slot:append>
-                        <div v-if="pendingDeletions.has(task.id)" class="deletion-pending">
-                          <v-chip color="error" size="small" class="mr-2">
-                            Удаление через {{ deletionTimers[task.id]?.timeLeft || 10 }}
-                          </v-chip>
-                          <v-btn 
-                            @click="cancelDeletion(task.id)"
-                            variant="text"
-                            color="warning"
-                            size="small"
-                          >
-                            Отмена
-                          </v-btn>
-                        </div>
-                        <v-btn 
-                          v-else
-                          icon 
-                          @click="startDeletion(task.id)"
-                          variant="text"
-                          color="error"
-                          size="small"
-                        >
-                          <v-icon>mdi-delete</v-icon>
-                        </v-btn>
-                      </template>
-                    </v-list-item>
-                  </v-list>
-
-                  <v-card class="mt-6">
-                    <v-card-text>
-                      <p>Всего задач: {{ tasks.length }}</p>
-                      <p>Активных: {{ tasks.filter(t => !t.completed).length }}</p>
-                      <p>Завершенных: {{ tasks.filter(t => t.completed).length }}</p>
-                      <p>Процент завершения: 
-                        {{ (tasks.filter(t => t.completed).length / tasks.length * 100).toFixed(1) }}%
-                      </p>
-                    </v-card-text>
-                  </v-card>
-                </v-col>
-              </v-row>
-            </v-container>
-          </v-col>
-        </v-row>
-      </v-container>
+      <TasksBody
+        :tasks="tasks"
+        :filtered-tasks="filteredTasks"
+        :current-filter="currentFilter"
+        :new-task-title="newTaskTitle"
+        :active-count="tasks.filter(t => !t.completed).length"
+        :completed-count="tasks.filter(t => t.completed).length"
+        :pending-deletions="pendingDeletions"
+        :deletion-timers="deletionTimers"
+        :format-date="formatDate"
+        @change-filter="currentFilter = $event"
+        @update:newTaskTitle="newTaskTitle = $event"
+        @add-task="addTask"
+        @toggle-task="toggleTask"
+        @start-deletion="startDeletion"
+        @cancel-deletion="cancelDeletion"
+      />
     </v-main>
   </v-app>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import AppHeader from '@/components/AppHeader.vue'
+import TasksBody from '@/components/TasksBody.vue'
 import { startDeletionTimer, cancelDeletionTimer, clearAllDeletionTimers, type DeletionTimer } from '@/utils/deletionTimers'
 import type { Task } from '@/types'
 
@@ -243,35 +140,4 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-.logo {
-  width: 50px;
-  height: 50px;
-}
-
-.filter-section {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.deletion-pending {
-  display: flex;
-  align-items: center;
-}
-
-.text-decoration-line-through {
-  text-decoration: line-through;
-}
-
-@media (max-width: 960px) {
-  .filter-section {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
-  .filter-section button {
-    width: 100%;
-    margin-bottom: 8px;
-  }
-}
 </style>
