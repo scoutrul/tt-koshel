@@ -75,7 +75,7 @@
                         Создано: {{ formatDate(task.createdAt) }}
                         | Обновлено: {{ formatDate(task.updatedAt) }}
                         <span v-if="task.completed">
-                          | Завершено: {{ formatTaskDate(task.completedAt) }}
+                          | Завершено: {{ formatDate(task.completedAt) }}
                         </span>
                       </v-list-item-subtitle>
                       
@@ -199,17 +199,6 @@ const loadTasks = async () => {
       completedAt: new Date('2024-01-30')
     }
   ]
-}
-
-const formatTaskDate = (date: Date | null) => {
-  if (!date) return '—'
-  return new Intl.DateTimeFormat('ru-RU', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  }).format(new Date(date))
 }
 
 const addTask = () => {
