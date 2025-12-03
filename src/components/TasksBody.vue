@@ -1,44 +1,38 @@
 <template>
-  <v-container fluid>
+  <v-container>
     <v-row>
-      <v-col cols="12" md="8">
-        <v-container>
-          <v-row>
-            <v-col cols="12">
-              <h1 class="text-h4 mb-4">Мои задачи</h1>
+      <v-col cols="12">
+        <h1 class="text-h4 mb-4">Мои задачи</h1>
 
-              <TaskFilters
-                :current-filter="currentFilter"
-                :total="tasks.length"
-                :active-count="activeCount"
-                :completed-count="completedCount"
-                @change-filter="changeFilter"
-              />
+        <TaskFilters
+          :current-filter="currentFilter"
+          :total="tasks.length"
+          :active-count="activeCount"
+          :completed-count="completedCount"
+          @change-filter="changeFilter"
+        />
 
-              <AddTaskForm
-                :new-task-title="newTaskTitle"
-                @update:newTaskTitle="newTaskTitle = $event"
-                @add-task="addTask"
-              />
+        <AddTaskForm
+          :new-task-title="newTaskTitle"
+          @update:newTaskTitle="newTaskTitle = $event"
+          @add-task="addTask"
+        />
 
-              <TaskList
-                :tasks="filteredTasks"
-                :pending-deletions="pendingDeletions"
-                :deletion-timers="deletionTimers"
-                :format-date="formatDate"
-                @toggle-task="toggleTask"
-                @start-deletion="startDeletion"
-                @cancel-deletion="cancelDeletion"
-              />
+        <TaskList
+          :tasks="filteredTasks"
+          :pending-deletions="pendingDeletions"
+          :deletion-timers="deletionTimers"
+          :format-date="formatDate"
+          @toggle-task="toggleTask"
+          @start-deletion="startDeletion"
+          @cancel-deletion="cancelDeletion"
+        />
 
-              <TaskStats
-                :total="tasks.length"
-                :active="activeCount"
-                :completed="completedCount"
-              />
-            </v-col>
-          </v-row>
-        </v-container>
+        <TaskStats
+          :total="tasks.length"
+          :active="activeCount"
+          :completed="completedCount"
+        />
       </v-col>
     </v-row>
   </v-container>

@@ -1,12 +1,17 @@
 <template>
   <v-app-bar color="white" density="compact">
-    <v-img
-      class="logo ml-12 mr-4"
+    <template v-slot:prepend>
+      <v-img
+      class="logo mr-4"
       src="https://storage.yandexcloud.net/forlogo/logo.svg"
       alt="Логотип"
-      cover
+      contain
     />
-    <v-app-bar-title>Управление задачами</v-app-bar-title>
+  </template>
+
+    <v-app-bar-title class="text-truncate">
+      Управление задачами
+    </v-app-bar-title>
   </v-app-bar>
 </template>
 
