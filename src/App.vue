@@ -128,7 +128,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 
 interface DeletionTimer {
   timerId: number
@@ -228,24 +228,22 @@ const toggleTask = (id: number) => {
 
 const startDeletion = (id: number) => {
   pendingDeletions.value.add(id)
-  
-  const timerId = window.setInterval(() => {
-    if (deletionTimers.value[id]) {
-      deletionTimers.value[id].timeLeft--
-      
-      if (deletionTimers.value[id].timeLeft <= 0) {
-        tasks.value = tasks.value.filter(t => t.id !== id)
-        pendingDeletions.value.delete(id)
-        
-        const timer = deletionTimers.value[id]
-        if (timer) {
-          clearInterval(timer.timerId)
-          delete deletionTimers.value[id]
-        }
-      }
-    }
+
+  const timerId = setInterval(() => {
+    const timer = deletionTimers.value[id]
+    if (!timer) return
+
+    timer.timeLeft--
+
+    if (timer.timeLeft > 0) return
+
+    tasks.value = tasks.value.filter(t => t.id !== id)
+    pendingDeletions.value.delete(id)
+
+    clearInterval(timer.timerId)
+    delete deletionTimers.value[id]
   }, 1000)
-  
+
   deletionTimers.value[id] = {
     timerId,
     timeLeft: 10
@@ -257,13 +255,21 @@ const cancelDeletion = (id: number) => {
   
   const timer = deletionTimers.value[id]
   if (timer) {
+    clearInterval(timer.timerId)
     delete deletionTimers.value[id]
-    
   }
 }
 
 onMounted(() => {
   loadTasks()
+})
+
+onUnmounted(() => {
+  Object.values(deletionTimers.value).forEach(timer => {
+    clearInterval(timer.timerId)
+  })
+  deletionTimers.value = {}
+  pendingDeletions.value.clear()
 })
 </script>
 
