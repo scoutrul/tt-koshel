@@ -28,17 +28,17 @@
 </template>
 
 <script setup lang="ts">
-type Filter = 'all' | 'active' | 'completed'
+import type { TaskFilter } from '@/types'
 
 defineProps<{
-  currentFilter: Filter
+  currentFilter: TaskFilter
   total: number
   activeCount: number
   completedCount: number
 }>()
 
 defineEmits<{
-  (e: 'change-filter', filter: Filter): void
+  (e: 'change-filter', filter: TaskFilter): void
 }>()
 </script>
 

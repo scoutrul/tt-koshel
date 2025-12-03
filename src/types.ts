@@ -7,4 +7,6 @@ export interface Task {
   completedAt: Date | null
 }
 
+export type TaskFilter = 'all' | 'active' | 'completed'
+
 

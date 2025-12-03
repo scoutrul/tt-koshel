@@ -12,13 +12,13 @@
                 :total="tasks.length"
                 :active-count="activeCount"
                 :completed-count="completedCount"
-                @change-filter="$emit('change-filter', $event)"
+                @change-filter="changeFilter"
               />
 
               <AddTaskForm
                 :new-task-title="newTaskTitle"
-                @update:newTaskTitle="$emit('update:newTaskTitle', $event)"
-                @add-task="$emit('add-task')"
+                @update:newTaskTitle="newTaskTitle = $event"
+                @add-task="addTask"
               />
 
               <TaskList
@@ -26,9 +26,9 @@
                 :pending-deletions="pendingDeletions"
                 :deletion-timers="deletionTimers"
                 :format-date="formatDate"
-                @toggle-task="$emit('toggle-task', $event)"
-                @start-deletion="$emit('start-deletion', $event)"
-                @cancel-deletion="$emit('cancel-deletion', $event)"
+                @toggle-task="toggleTask"
+                @start-deletion="startDeletion"
+                @cancel-deletion="cancelDeletion"
               />
 
               <TaskStats
@@ -45,35 +45,55 @@
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted, onUnmounted } from 'vue'
 import TaskList from './TaskList.vue'
 import TaskStats from './TaskStats.vue'
 import TaskFilters from './TaskFilters.vue'
 import AddTaskForm from './AddTaskForm.vue'
-import type { Task } from '@/types'
-import type { DeletionTimer } from '@/utils/deletionTimers'
+import { useTasks } from '@/composables/useTasks'
+import type { TaskFilter } from '@/types'
+import {
+  startDeletionTimer,
+  cancelDeletionTimer,
+  clearAllDeletionTimers,
+  type DeletionTimer,
+} from '@/utils/deletionTimers'
 
-type Filter = 'all' | 'active' | 'completed'
+const {
+  tasks,
+  newTaskTitle,
+  currentFilter,
+  filteredTasks,
+  activeCount,
+  completedCount,
+  formatDate,
+  loadTasks,
+  addTask,
+  toggleTask,
+} = useTasks()
 
-defineProps<{
-  tasks: Task[]
-  filteredTasks: Task[]
-  currentFilter: Filter
-  newTaskTitle: string
-  activeCount: number
-  completedCount: number
-  pendingDeletions: Set<number>
-  deletionTimers: Record<number, DeletionTimer>
-  formatDate: (date: Date | null) => string
-}>()
+const pendingDeletions = ref<Set<number>>(new Set())
+const deletionTimers = ref<Record<number, DeletionTimer>>({})
 
-defineEmits<{
-  (e: 'change-filter', filter: Filter): void
-  (e: 'update:newTaskTitle', value: string): void
-  (e: 'add-task'): void
-  (e: 'toggle-task', id: number): void
-  (e: 'start-deletion', id: number): void
-  (e: 'cancel-deletion', id: number): void
-}>()
+const changeFilter = (filter: TaskFilter) => {
+  currentFilter.value = filter
+}
+
+const startDeletion = (id: number) => {
+  startDeletionTimer(id, tasks, pendingDeletions, deletionTimers)
+}
+
+const cancelDeletion = (id: number) => {
+  cancelDeletionTimer(id, pendingDeletions, deletionTimers)
+}
+
+onMounted(() => {
+  loadTasks()
+})
+
+onUnmounted(() => {
+  clearAllDeletionTimers(pendingDeletions, deletionTimers)
+})
 </script>
 
 <style scoped>
