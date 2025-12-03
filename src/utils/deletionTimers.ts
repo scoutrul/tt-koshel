@@ -1,11 +1,12 @@
 import type { Ref } from 'vue'
+import type { Task } from '@/types'
 
 export interface DeletionTimer {
   timerId: number
   timeLeft: number
 }
 
-export type TasksRef = Ref<any[]>
+export type TasksRef = Ref<Task[]>
 export type PendingDeletionsRef = Ref<Set<number>>
 export type DeletionTimersRef = Ref<Record<number, DeletionTimer>>
 

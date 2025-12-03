@@ -131,14 +131,10 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import {
-  startDeletionTimer,
-  cancelDeletionTimer,
-  clearAllDeletionTimers,
-  type DeletionTimer,
-} from '@/utils/deletionTimers'
+import { startDeletionTimer, cancelDeletionTimer, clearAllDeletionTimers, type DeletionTimer } from '@/utils/deletionTimers'
+import type { Task } from '@/types'
 
-const tasks = ref<any[]>([])
+const tasks = ref<Task[]>([])
 const newTaskTitle = ref('')
 const currentFilter = ref<'all' | 'active' | 'completed'>('all')
 const pendingDeletions = ref<Set<number>>(new Set())
@@ -207,7 +203,7 @@ const loadTasks = async () => {
 const addTask = () => {
   if (!newTaskTitle.value.trim()) return
   
-  const newTask: any = {
+  const newTask: Task = {
     id: Date.now(),
     title: newTaskTitle.value,
     completed: false,
