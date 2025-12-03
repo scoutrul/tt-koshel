@@ -136,10 +136,8 @@ interface DeletionTimer {
 }
 
 const tasks = ref<any[]>([])
-const userTasks = ref<any[]>([])
 const newTaskTitle = ref('')
 const currentFilter = ref<'all' | 'active' | 'completed'>('all')
-const userFilter = ref<'all' | 'active'>('all')
 const pendingDeletions = ref<Set<number>>(new Set())
 const deletionTimers = ref<Record<number, DeletionTimer>>({})
 
@@ -154,18 +152,6 @@ const formatDate = (date: Date | null) => {
   }).format(new Date(date))
 }
 
-const getCompletionPercentage = () => {
-  if (tasks.value.length === 0) return 0
-  const completed = tasks.value.filter(t => t.completed).length
-  return (completed / tasks.value.length * 100).toFixed(1)
-}
-
-const calculateCompletionRate = () => {
-  if (userTasks.value.length === 0) return 0
-  const completed = userTasks.value.filter(t => t.completed).length
-  return (completed / userTasks.value.length * 100).toFixed(1)
-}
-
 const filteredTasks = computed(() => {
   switch (currentFilter.value) {
     case 'active':
@@ -175,22 +161,6 @@ const filteredTasks = computed(() => {
     default:
       return tasks.value
   }
-})
-
-const filteredUserTasks = computed(() => {
-  if (userFilter.value === 'active') {
-    return userTasks.value.filter(t => !t.completed)
-  }
-  return userTasks.value
-})
-
-const taskStats = computed(() => {
-  console.log('Пересчет taskStats')
-  const total = tasks.value.length
-  const active = tasks.value.filter(t => !t.completed).length
-  const completed = tasks.value.filter(t => t.completed).length
-  const percentage = total > 0 ? (completed / total * 100).toFixed(1) : '0'
-  return { total, active, completed, percentage }
 })
 
 const loadTasks = async () => {
@@ -227,40 +197,6 @@ const loadTasks = async () => {
       createdAt: new Date('2024-01-25'),
       updatedAt: new Date('2024-01-30'),
       completedAt: new Date('2024-01-30')
-    }
-  ]
-}
-
-const loadUserTasks = async () => {
-  await new Promise(resolve => setTimeout(resolve, 200))
-  userTasks.value = [
-    {
-      id: 101,
-      title: 'Подготовить отчет',
-      completed: true,
-      createdAt: new Date('2024-02-01T10:00:00'),
-      completedAt: new Date('2024-02-05T15:30:00')
-    },
-    {
-      id: 102,
-      title: 'Создать презентацию',
-      completed: false,
-      createdAt: new Date('2024-02-10T09:15:00'),
-      completedAt: null
-    },
-    {
-      id: 103,
-      title: 'Провести митинг',
-      completed: false,
-      createdAt: new Date('2024-02-12T11:00:00'),
-      completedAt: null
-    },
-    {
-      id: 104,
-      title: 'Код ревью',
-      completed: true,
-      createdAt: new Date('2024-02-08T14:20:00'),
-      completedAt: new Date('2024-02-09T16:45:00')
     }
   ]
 }
@@ -337,20 +273,8 @@ const cancelDeletion = (id: number) => {
   }
 }
 
-const handleKeyPress = () => {
-  console.log('Key pressed')
-}
-
-const handleResize = () => {
-  console.log('Resize event')
-}
-
-window.addEventListener('keypress', handleKeyPress)
-window.addEventListener('resize', handleResize)
-
 onMounted(() => {
   loadTasks()
-  loadUserTasks()
 })
 </script>
 
