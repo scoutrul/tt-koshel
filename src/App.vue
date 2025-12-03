@@ -1,9 +1,11 @@
 <template>
   <v-app>
     <v-app-bar color="white" density="compact">
-      <object
+      <v-img
         class="logo ml-12 mr-4"
-        data="https://storage.yandexcloud.net/forlogo/logo.svg" 
+        src="https://storage.yandexcloud.net/forlogo/logo.svg"
+        alt="Логотип"
+        cover
       />
       <v-app-bar-title>Управление задачами</v-app-bar-title>
     </v-app-bar>
