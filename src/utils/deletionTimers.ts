@@ -1,5 +1,6 @@
 import type { Ref } from 'vue'
 import type { Task } from '@/types'
+import { saveTasksToStorage } from '@/services/taskStorage'
 
 export interface DeletionTimer {
   timerId: number
@@ -27,6 +28,7 @@ export const startDeletionTimer = (
     if (timer.timeLeft > 0) return
 
     tasks.value = tasks.value.filter(t => t.id !== id)
+    saveTasksToStorage(tasks.value)
     pendingDeletions.value.delete(id)
 
     clearInterval(timer.timerId)

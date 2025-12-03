@@ -1,6 +1,7 @@
 import { computed, ref } from 'vue'
 import type { Task, TaskFilter } from '@/types'
 import { formatDate } from '@/utils/dateFormatter'
+import { loadTasksFromStorage, saveTasksToStorage } from '@/services/taskStorage'
 
 const tasks = ref<Task[]>([])
 const newTaskTitle = ref('')
@@ -22,6 +23,12 @@ const completedCount = computed(() => tasks.value.filter(t => t.completed).lengt
 
 const loadTasks = async () => {
   if (tasks.value.length) return
+
+  const stored = loadTasksFromStorage()
+  if (stored && stored.length) {
+    tasks.value = stored
+    return
+  }
 
   await new Promise(resolve => setTimeout(resolve, 300))
   tasks.value = [
@@ -58,6 +65,8 @@ const loadTasks = async () => {
       completedAt: new Date('2024-01-30'),
     },
   ]
+
+  saveTasksToStorage(tasks.value)
 }
 
 const addTask = () => {
@@ -74,6 +83,7 @@ const addTask = () => {
 
   tasks.value.push(newTask)
   newTaskTitle.value = ''
+  saveTasksToStorage(tasks.value)
 }
 
 const toggleTask = (id: number) => {
@@ -82,6 +92,7 @@ const toggleTask = (id: number) => {
     task.completed = !task.completed
     task.updatedAt = new Date()
     task.completedAt = task.completed ? new Date() : null
+    saveTasksToStorage(tasks.value)
   }
 }
 
