@@ -72,8 +72,8 @@ const loadTasks = async () => {
   saveTasksToStorage(tasks.value)
 }
 
-const addTask = () => {
-  if (!newTaskTitle.value.trim()) return
+const addTask = (): boolean => {
+  if (!newTaskTitle.value.trim()) return false
 
   const newTask: Task = {
     id: Date.now(),
@@ -88,6 +88,8 @@ const addTask = () => {
   newTaskTitle.value = ''
   saveTasksToStorage(tasks.value)
   addEvent(newTask, 'created')
+
+  return true
 }
 
 const toggleTask = (id: number) => {

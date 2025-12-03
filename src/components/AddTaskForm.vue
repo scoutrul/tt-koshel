@@ -1,9 +1,13 @@
 <template>
-  <v-form @submit.prevent="addTask" class="mb-6">
+  <v-form
+    validate-on="submit lazy"
+    @submit.prevent="addTask"
+    class="mb-6"
+  >
     <v-text-field
       v-model="newTaskTitle"
       label="Новая задача"
-      :rules="[value => !!value || 'Введите текст задачи']"
+      :rules="[value => !!value?.trim() || 'Введите текст задачи']"
       variant="outlined"
       density="comfortable"
     />
