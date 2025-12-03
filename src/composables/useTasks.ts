@@ -96,6 +96,11 @@ const toggleTask = (id: number) => {
   }
 }
 
+const removeTask = (id: number) => {
+  tasks.value = tasks.value.filter(t => t.id !== id)
+  saveTasksToStorage(tasks.value)
+}
+
 export const useTasks = () => {
   return {
     tasks,
@@ -108,6 +113,7 @@ export const useTasks = () => {
     loadTasks,
     addTask,
     toggleTask,
+    removeTask,
   }
 }
 

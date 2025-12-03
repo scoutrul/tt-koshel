@@ -43,15 +43,15 @@ const {
   filteredTasks,
   formatDate,
   loadTasks,
-  addTask,
   toggleTask,
+  removeTask,
 } = useTasks()
 
 const pendingDeletions = ref<Set<number>>(new Set())
 const deletionTimers = ref<Record<number, DeletionTimer>>({})
 
 const startDeletion = (id: number) => {
-  startDeletionTimer(id, tasks, pendingDeletions, deletionTimers)
+  startDeletionTimer(id, removeTask, pendingDeletions, deletionTimers)
 }
 
 const cancelDeletion = (id: number) => {

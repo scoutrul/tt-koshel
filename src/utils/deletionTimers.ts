@@ -1,19 +1,16 @@
 import type { Ref } from 'vue'
-import type { Task } from '@/types'
-import { saveTasksToStorage } from '@/services/taskStorage'
 
 export interface DeletionTimer {
   timerId: number
   timeLeft: number
 }
 
-export type TasksRef = Ref<Task[]>
 export type PendingDeletionsRef = Ref<Set<number>>
 export type DeletionTimersRef = Ref<Record<number, DeletionTimer>>
 
 export const startDeletionTimer = (
   id: number,
-  tasks: TasksRef,
+  onExpire: (id: number) => void,
   pendingDeletions: PendingDeletionsRef,
   deletionTimers: DeletionTimersRef,
 ) => {
@@ -27,8 +24,7 @@ export const startDeletionTimer = (
 
     if (timer.timeLeft > 0) return
 
-    tasks.value = tasks.value.filter(t => t.id !== id)
-    saveTasksToStorage(tasks.value)
+    onExpire(id)
     pendingDeletions.value.delete(id)
 
     clearInterval(timer.timerId)
