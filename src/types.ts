@@ -9,4 +9,14 @@ export interface Task {
 
 export type TaskFilter = 'all' | 'active' | 'completed'
 
+export type TaskEventAction = 'created' | 'completed' | 'reopened' | 'deleted'
+
+export interface TaskEvent {
+  id: number
+  taskId: number
+  titleShort: string
+  action: TaskEventAction
+  timestamp: Date
+}
+
 

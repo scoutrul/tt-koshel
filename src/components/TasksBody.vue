@@ -1,7 +1,7 @@
 <template>
-  <v-container>
-    <v-row>
-      <v-col cols="12">
+  <v-container class="fill-height">
+    <v-row class="fill-height" align="stretch">
+      <v-col cols="12" lg="8">
         <h1 class="text-h4 mb-4">Мои задачи</h1>
 
         <TaskFilters />
@@ -20,6 +20,14 @@
 
         <TaskStats />
       </v-col>
+
+      <v-col
+        cols="12"
+        lg="4"
+        class="mt-4 mt-lg-0"
+      >
+        <TaskEventsFeed class="tasks-body__events" />
+      </v-col>
     </v-row>
   </v-container>
 </template>
@@ -30,6 +38,7 @@ import TaskList from './TaskList.vue'
 import TaskStats from './TaskStats.vue'
 import TaskFilters from './TaskFilters.vue'
 import AddTaskForm from './AddTaskForm.vue'
+import TaskEventsFeed from './TaskEventsFeed.vue'
 import { useTasks } from '@/composables/useTasks'
 import {
   startDeletionTimer,
@@ -68,6 +77,8 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+.tasks-body__events {
+  height: 100%;
+}
 </style>
-
 
